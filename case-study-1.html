@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Case Study 1: Catching bugs that "looked fixed" | SleepyMie</title>
+<meta name="description" content="Four bugs from ChocoNeko, a Roblox game, and how I narrowed them down and checked the fixes.">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="nav"><div class="wrap">
+  <a class="brand" href="index.html"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M6 27V9l6 5h8l6-5v18c0 1-1 2-2 2H8c-1 0-2-1-2-2z" fill="#7a4a33"/><circle cx="12.5" cy="19" r="1.6" fill="#fbf6f0"/><circle cx="19.5" cy="19" r="1.6" fill="#fbf6f0"/><path d="M14.5 23q1.5 1.2 3 0" stroke="#fbf6f0" stroke-width="1.4" fill="none" stroke-linecap="round"/></svg>SleepyMie</a>
+  <nav aria-label="Main"><ul><li><a href="index.html#about">About</a></li><li><a href="index.html#work">Work</a></li><li><a href="index.html#contact">Contact</a></li></ul></nav>
+</div></header>
+<main class="wrap">
+<article class="cs">
+<h1>Case Study 1: Catching bugs that "looked fixed"</h1>
+<p><strong>In short:</strong> four bugs from my Roblox game where I kept testing, asked for logs, and didn't treat a bug as closed until I'd tested it myself.</p>
+<h2>What I do on this project</h2>
+<p>ChocoNeko is a Roblox game with four live places. I've directed it for about six months, since April 2026. AI agents write and fix the code. My job is to set direction, playtest in Studio and the live game, report what's wrong, and approve changes. I work alongside an artist, a writer and a world builder who bring the game's look, story and world to life.</p>
+<hr />
+<h2>1. Free cam took about 5 seconds to open (Sep 11)</h2>
+<p><strong>What I noticed:</strong> In Incrediblox, pressing the Cam button took a long time before free cam actually worked.</p>
+<p><strong>How I narrowed it down:</strong> The agent's first fix removed an intentional overlay delay of about 3 seconds. I tested it and it still didn't work. So I asked for timing logs between the click and "free cam ready". I ran it and pasted the output, and it showed a gap of about 5 seconds (5,032 ms in the log). I also mentioned that the phone had a similar lag, and asked the agent to compare against the Hub place.</p>
+<p><strong>What the cause was:</strong> Code shared with the phone waited up to 5 seconds for a player-controls module that wasn't where it expected in this place.</p>
+<p><strong>Result:</strong> The agent stopped the code from waiting. I turned on a Studio setting it suggested, and Cam opened straight away.</p>
+<div class="media-ph" role="img" aria-label="Clip placeholder: free cam opening before vs after"><span class="kind">CLIP</span> free cam opening before vs after</div>
+
+<hr />
+<h2>2. Muffled first beat and late loops in Incrediblox (Sep 10–11)</h2>
+<p><strong>What I noticed:</strong> After an audio optimisation, the first beat of every new loop sounded muffled. Later, after adding a "jump to part of the song" scrub, the next loop came in noticeably late.</p>
+<p><strong>How I narrowed it down:</strong> For the muffled beat, I pinned down when it happened: only as a new loop starts. For the late loop, I suggested a timing test comparing "scrub, then wait for the next loop" with a normal loop. I ran it several times and pasted the logs, then asked for more detailed logging when the first results didn't explain it.</p>
+<p><strong>What the cause was:</strong> For the muffled beat, clips were starting an estimated 16–40 ms late, which cut off the start of the drum hit. For the late loop, the scrub was rewinding the song clock when I let go of the bar.</p>
+<p><strong>Result:</strong> The beat punched again. In my test runs, loop lateness after a scrub went from about 100–137 ms down to 3–19 ms.</p>
+<div class="media-ph" role="img" aria-label="Clip placeholder: first beat before vs after"><span class="kind">CLIP</span> first beat before vs after</div>
+
+<hr />
+<h2>3. Phone and backpack opened, then closed straight away (Sep 3)</h2>
+<p><strong>What I noticed:</strong> Clicking the Phone or Backpack button did nothing roughly 4 in 10 clicks, by my count.</p>
+<p><strong>How I narrowed it down:</strong> A friend spotted it first while playing the live game: the buttons only half worked, and it seemed to depend on how they joined. I hadn't touched those two buttons in a while, so I suspected something else had broken them. I had my friend rejoin and respawn to test a few theories, and concluded it happened on join rather than anything else. The first two fixes were reported as done but it was still broken, and after the third I saw a new pattern: sometimes only one of the two worked. So I asked for a click probe (logging every step of a click) and pasted what it showed.</p>
+<p><strong>What the cause was:</strong> One click was being handled twice: open, then close. Then the panel opened on mouse-down, and the dark background behind it closed it on mouse-up.</p>
+<p><strong>Result:</strong> The logs showed the full click path working every time. I asked to keep the probe switched off, not deleted, in case the bug comes back.</p>
+<div class="media-ph" role="img" aria-label="Clip placeholder: clicking phone and backpack repeatedly"><span class="kind">CLIP</span> clicking phone and backpack repeatedly</div>
+
+<hr />
+<h2>4. Hotbar looked fine in Studio, broken in the published game (Sep 1)</h2>
+<p><strong>What I noticed:</strong> After a hotbar resize, everything looked right in Studio, but the published game still showed the old broken layout.</p>
+<p><strong>How I narrowed it down:</strong> I retested in the published game after every patch and sent screenshots. After one patch it was still wrong on published. After another it was broken in Studio too. Then a huge grey pill shape appeared around each slot.</p>
+<p><strong>What the cause was:</strong> A script name clash and a timing issue on join were fixed first. The final cause was an outline setting in Studio that scaled with slot size, so the outline became bigger than the slot itself.</p>
+<p><strong>Result:</strong> It worked in both Studio and live. After that I made the small spacing and readability calls on the hotbar and level number.</p>
+<div class="media-ph" role="img" aria-label="Screenshot placeholder: hotbar before vs after, published"><span class="kind">SCREENSHOT</span> hotbar before vs after, published</div>
+
+<hr />
+<h2>How I test</h2>
+<ul>
+<li><strong>Studio vs live:</strong> I check the published game, not just Studio, because they don't always match.</li>
+<li><strong>More than one machine:</strong> I compare with another person's device, or PC vs phone.</li>
+<li><strong>Ask for numbers:</strong> When something feels off, I ask for timing logs or a probe and paste back what I get.</li>
+<li><strong>Retest after every patch:</strong> That includes things that were working before, because fixes can break other parts.</li>
+<li><strong>A bug isn't closed until I've tested it:</strong> I don't treat a bug as closed until I've tested it myself.</li>
+</ul>
+<h2>What I'm looking for</h2>
+<p>A junior QA or game tester role where I can keep learning proper test methods and bug reporting with a team.</p>
+<a class="btn ghost back" href="index.html#work">&larr; Back to portfolio</a>
+</article>
+</main>
+<footer><div class="wrap">&copy; 2026 SleepyMie</div></footer>
+</body>
+</html>
