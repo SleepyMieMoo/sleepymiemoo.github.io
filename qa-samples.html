@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>QA writing samples | SleepyMie</title>
+<meta name="description" content="Sample bug reports and a test plan by SleepyMie, junior QA and game tester, based on real bugs from ChocoNeko, a Roblox game.">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="nav"><div class="wrap">
+  <a class="brand" href="index.html"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M6 27V9l6 5h8l6-5v18c0 1-1 2-2 2H8c-1 0-2-1-2-2z" fill="#7a4a33"/><circle cx="12.5" cy="19" r="1.6" fill="#fbf6f0"/><circle cx="19.5" cy="19" r="1.6" fill="#fbf6f0"/><path d="M14.5 23q1.5 1.2 3 0" stroke="#fbf6f0" stroke-width="1.4" fill="none" stroke-linecap="round"/></svg>SleepyMie</a>
+  <nav aria-label="Main"><ul><li class="hide-sm"><a href="index.html#about">About</a></li><li><a href="index.html#work">Work</a></li><li><a href="qa-samples.html" aria-current="page">QA samples</a></li><li><a href="index.html#contact">Contact</a></li></ul></nav>
+</div></header>
+<main class="wrap">
+<article class="cs qa">
+<h1>QA writing samples</h1>
+<p>These are writing samples to show how I write bug reports and test plans. The two bug reports are retrospective write-ups of real bugs from ChocoNeko, my Roblox game, that have since been fixed. At the time I reported them in plain messages to the AI coding agents that write the code, so I've rewritten them here in a standard format. The test plan is a sample plan for a real change. Where I don't have an exact detail, such as the build version, I've left a placeholder in <span class="ph">[brackets]</span>.</p>
+<ul class="toc">
+<li><a href="#bug-1">Bug report 1: Phone and Backpack open, then close</a></li>
+<li><a href="#bug-2">Bug report 2: Free cam takes about 5 seconds to open</a></li>
+<li><a href="#test-plan">Test plan: HUD and chat day/night recolour</a></li>
+</ul>
+<hr />
+<section class="report" id="bug-1">
+<p class="kicker">Bug report 1 &middot; <span class="label">Retrospective write-up of a real bug, now fixed</span></p>
+<h2>CN-BUG-001: HUD Phone and Backpack panels open and immediately close on click (about 4 in 10 clicks, depends on the join)</h2>
+<dl class="fields">
+<dt>ID</dt><dd>CN-BUG-001</dd>
+<dt>Date found</dt><dd>Sep 3, 2026</dd>
+<dt>Reported by</dt><dd>SleepyMie (first spotted by a friend playtesting the live game)</dd>
+<dt>Severity</dt><dd>High. Two core HUD buttons were unreliable in the live game. Workaround: click again.</dd>
+<dt>Priority</dt><dd>P1. Affects every player who joins into the bad state.</dd>
+<dt>Component</dt><dd>HUD: Phone button, Backpack button</dd>
+<dt>Status</dt><dd><span class="status">Closed: fixed and verified (Sep 3, 2026)</span></dd>
+</dl>
+<h3>Environment</h3><ul><li>Build: <span class="ph">[version]</span></li><li>Environment: live (published) game, also checked in Roblox Studio</li><li>Place: <span class="ph">[place where observed]</span></li><li>Platform: PC, mouse input. Device: <span class="ph">[device model]</span>. OS: <span class="ph">[OS version]</span></li><li>Second tester: a friend on their own machine, live game</li></ul>
+<h3>Preconditions</h3><ul><li>Player has joined the game and the HUD has finished loading.</li><li>Phone and Backpack panels are closed.</li></ul>
+<h3>Steps to reproduce</h3><ol><li>Join the live game.</li><li>When the HUD appears, click the Phone button once.</li><li>Watch the Phone panel for about 2 seconds, then close it if it opened.</li><li>Repeat steps 2 and 3 ten times and count how many clicks leave the panel open.</li><li>Repeat steps 2 to 4 with the Backpack button.</li><li>Leave and rejoin, then repeat steps 2 to 5.</li><li>Respawn the character, then repeat steps 2 to 5.</li></ol>
+<h3>Expected result</h3><p>Each click opens the panel and it stays open until the player closes it.</p>
+<h3>Actual result</h3><p>On roughly 4 in 10 clicks the panel opens and closes again straight away, so it looks like the button did nothing. How often it happens depends on the join: in some sessions the buttons worked fine, and one tester could open them without problems while it failed for another. During later retests a new pattern showed up where only one of the two buttons worked.</p>
+<h3>Reproduction rate</h3><p>About 4 in 10 clicks in affected sessions (my rough count). Not every session is affected; it depends on the join.</p>
+<h3>Evidence / attachments</h3><ul class="attach"><li><span class="ph">[CLIP: clicking Phone and Backpack repeatedly]</span></li><li><span class="ph">[Log: click probe output, before and after the fix]</span></li></ul>
+<h3>Notes</h3><ul><li>Narrowing down: I had my friend rejoin and respawn to test a few theories, and concluded the problem started on join rather than from anything later in the session.</li><li>I hadn't changed these two buttons in a while, so I suspected another change had broken them.</li><li>Cause, as found by the coding agent over three fixes: (1) a timing issue in how the buttons were wired up on join; (2) one click was being handled twice, so the panel toggled open and then closed; (3) the panel opened on mouse-down, and the dark full-screen background behind it closed it again on mouse-up. Larger panels hid the problem because they cover the top of the screen.</li><li>I asked for a click probe (logging every step of a click) to confirm the final fix. The probe was left in the code but switched off, so it can be turned back on if the bug returns.</li></ul>
+<h3>Status / verification</h3><p><strong>Closed: fixed and verified (Sep 3, 2026)</strong></p>
+<table class="stack"><thead><tr><th scope="col">Fix</th><th scope="col">My retest</th></tr></thead><tbody>
+<tr><td data-label="Fix">Fix 1 (join timing)</td><td data-label="My retest">Retested: still failing.</td></tr>
+<tr><td data-label="Fix">Fix 2 (click handled twice)</td><td data-label="My retest">Retested: still intermittent.</td></tr>
+<tr><td data-label="Fix">Fix 3 (mouse-down / mouse-up)</td><td data-label="My retest">Retested: a new pattern where sometimes only one of the two buttons worked. Requested a click probe.</td></tr>
+<tr><td data-label="Fix">Final check</td><td data-label="My retest">Probe logs showed the full click path completing on every click, and both panels opened and stayed open in my retest. Closed.</td></tr>
+</tbody></table>
+</section>
+<hr />
+<section class="report" id="bug-2">
+<p class="kicker">Bug report 2 &middot; <span class="label">Retrospective write-up of a real bug, now fixed</span></p>
+<h2>CN-BUG-002: Incrediblox: free cam takes about 5 seconds to open after pressing Cam (5,032 ms in timing log)</h2>
+<dl class="fields">
+<dt>ID</dt><dd>CN-BUG-002</dd>
+<dt>Date found</dt><dd>Sep 11, 2026</dd>
+<dt>Reported by</dt><dd>SleepyMie</dd>
+<dt>Severity</dt><dd>Medium. The feature works in the end, but there is a long, unexplained wait with no feedback.</dd>
+<dt>Priority</dt><dd>P2. Noticeable delay on a player-facing feature, no data loss or crash.</dd>
+<dt>Component</dt><dd>Incrediblox: free cam (Cam button); also related to the phone</dd>
+<dt>Status</dt><dd><span class="status">Closed: fixed and verified (Sep 11, 2026)</span></dd>
+</dl>
+<h3>Environment</h3><ul><li>Build: <span class="ph">[version]</span></li><li>Environment: Roblox Studio playtest (timing log captured here). Live: <span class="ph">[confirm whether also checked live]</span></li><li>Place: Incrediblox</li><li>Platform: PC. Device: <span class="ph">[device model]</span>. OS: <span class="ph">[OS version]</span></li><li>Compared against: Hub place, where the same shared code did not have this delay</li></ul>
+<h3>Preconditions</h3><ul><li>Player is in the Incrediblox place and fully loaded.</li><li>Free cam is closed.</li></ul>
+<h3>Steps to reproduce</h3><ol><li>Start a playtest in the Incrediblox place.</li><li>Wait for the HUD to finish loading.</li><li>Press the Cam button.</li><li>Time how long it takes until the free cam controls respond (use the timing log between the click and "free cam ready").</li><li>Close free cam and repeat a few times.</li><li>Open the phone and note whether it has a similar delay.</li></ol>
+<h3>Expected result</h3><p>Free cam opens straight away after pressing Cam, apart from the short intended overlay animation.</p>
+<h3>Actual result</h3><p>Free cam takes about 5 seconds to become usable. The timing log shows 5,032 ms between the click and "free cam ready". The phone showed a similar lag in this place.</p>
+<h3>Reproduction rate</h3><p><span class="ph">[x of y attempts; exact count not recorded at the time]</span></p>
+<h3>Evidence / attachments</h3><ul class="attach"><li><span class="ph">[CLIP: free cam opening, before vs after]</span></li><li><span class="ph">[Log: timing log showing 5,032 ms between click and free cam ready]</span></li></ul>
+<h3>Notes</h3><ul><li>The first fix removed an intentional overlay delay of about 3 seconds. I retested and the long delay was still there, so I asked for timing logs between the click and "free cam ready", ran them and pasted the output.</li><li>Because the phone had a similar lag, I asked the agent to compare against the Hub place.</li><li>Cause, as found by the coding agent: code shared with the phone waited up to 5 seconds for a player-controls module that wasn't where it expected in this place (in Incrediblox it sat in a different location than in Hub). The 5,032 ms in the log matched that 5-second wait.</li><li>Fix: the code no longer waits and checks both locations. On the agent's advice I also turned on a Studio setting for the default player module.</li></ul>
+<h3>Status / verification</h3><p><strong>Closed: fixed and verified (Sep 11, 2026)</strong></p>
+<table class="stack"><thead><tr><th scope="col">Fix</th><th scope="col">My retest</th></tr></thead><tbody>
+<tr><td data-label="Fix">Fix 1 (removed ~3 s overlay delay)</td><td data-label="My retest">Retested: still slow. Requested timing logs.</td></tr>
+<tr><td data-label="Fix">Fix 2 (no waiting, checks both locations, plus Studio setting)</td><td data-label="My retest">Retested: Cam opened straight away. Closed.</td></tr>
+</tbody></table>
+</section>
+<hr />
+<section class="report" id="test-plan">
+<p class="kicker">Test plan &middot; <span class="label">Sample test plan for a real change</span></p>
+<h2>CN-TP-001: Test plan: HUD and chat day/night recolour (regression)</h2>
+<dl class="fields"><dt>Plan ID</dt><dd>CN-TP-001</dd><dt>Build under test</dt><dd><span class="ph">[version]</span></dd><dt>Tester</dt><dd>SleepyMie</dd><dt>Dates</dt><dd><span class="ph">[start date]</span> to <span class="ph">[end date]</span></dd></dl>
+<h3>Summary of the change</h3><p>The always-on HUD now changes colour gradually with the in-game day/night cycle so bright themes aren't glaring in daytime. Other panels, such as the chat, phone and backpack, pick up the day/night colours when they're opened instead of updating all the time. Players can turn this off with a toggle in the Theme tab (on by default). This plan checks that the change works, doesn't flicker, stays cheap on frame time, and hasn't broken anything nearby.</p>
+<h3>In scope</h3><ul><li>Always-on HUD colours during day, night and the transitions between them.</li><li>Chat panel colours and text readability (including the contrast stroke) at day and night.</li><li>Panels that recolour when opened (phone, backpack, others).</li><li>Theme tab toggle, on and off, and its default.</li><li>All five themes: Chocolate, Dark Choco, Vanilla, Strawberry, Blueberry.</li><li>Frame time of the recolour in Studio.</li><li>Rejoin and respawn behaviour.</li><li>Mobile HUD layout after the change.</li></ul>
+<h3>Out of scope</h3><ul><li>The day/night lighting itself (sky, sun, world lighting).</li><li>New theme designs or colour choices (design review, not regression).</li><li>Chat features unrelated to colour (sending, whispers, filtering).</li><li>Detailed performance profiling on specific low-end devices.</li></ul>
+<h3>Environments</h3><dl class="fields"><dt>Roblox Studio</dt><dd>PC playtest and Studio phone emulator. Used for frame-time checks.</dd><dt>Live (published) game</dt><dd>PC <span class="ph">[device model / OS]</span> and mobile phone <span class="ph">[device model / OS]</span>.</dd><dt>Places</dt><dd>Hub, TD Survival, Incrediblox, Cooking (Cooking uses the Hub HUD).</dd><dt>Tools</dt><dd>In-game /time admin command to jump between day and night; Studio MicroProfiler or a timing log for frame time; screen recording for flicker checks.</dd></dl>
+<h3>Entry criteria</h3><ul><li>The change is published to the test place and the build number is recorded.</li><li>The developer's own smoke test passes (HUD loads, no errors in the Output log).</li><li>Tester has admin access for the /time command.</li></ul>
+<h3>Exit criteria</h3><ul><li>All P1 cases pass in both Studio and live.</li><li>No open High or Critical bugs against this change.</li><li>Recolour frame time in Studio is close to the ~2&ndash;3 ms reference (exact threshold: <span class="ph">[ms]</span>).</li><li>No visible flicker in screen recordings on PC or mobile.</li><li>Any P2/P3 failures are logged with a decision (fix now or later).</li></ul>
+<h3>Test cases</h3>
+<table class="stack cases"><thead><tr><th scope="col">ID</th><th scope="col">Area</th><th scope="col">Steps</th><th scope="col">Expected</th><th scope="col">Priority</th></tr></thead><tbody>
+<tr><td data-label="ID">TC-01</td><td data-label="Area">HUD recolour</td><td data-label="Steps">Set time to just before dusk with /time. Watch the HUD through the change into night.</td><td data-label="Expected">HUD colours shift gradually from day to night. Text and icons stay readable.</td><td data-label="Priority">P1</td></tr>
+<tr><td data-label="ID">TC-02</td><td data-label="Area">Flicker</td><td data-label="Steps">Screen-record dawn and dusk transitions with the HUD and chat open. Step through the clip frame by frame.</td><td data-label="Expected">No flashes, blinks or frames where colours snap back and forth.</td><td data-label="Priority">P1</td></tr>
+<tr><td data-label="ID">TC-03</td><td data-label="Area">Frame time</td><td data-label="Steps">In Studio, run the MicroProfiler (or timing log) during a transition. Note the recolour cost.</td><td data-label="Expected">Recolour cost is about 2&ndash;3 ms, matching the Studio reference. Note anything clearly above it.</td><td data-label="Priority">P1</td></tr>
+<tr><td data-label="ID">TC-04</td><td data-label="Area">Chat panel</td><td data-label="Steps">Open chat at day, then at night. Send a few messages in each.</td><td data-label="Expected">Chat colours match the time of day. Text and contrast stroke are readable on both.</td><td data-label="Priority">P1</td></tr>
+<tr><td data-label="ID">TC-05</td><td data-label="Area">Panels on open</td><td data-label="Steps">Close the phone and backpack. Change day to night. Open each panel.</td><td data-label="Expected">Panels open with the current night colours already applied. No visible colour swap after opening.</td><td data-label="Priority">P2</td></tr>
+<tr><td data-label="ID">TC-06</td><td data-label="Area">Theme toggle</td><td data-label="Steps">Turn the day/night toggle off in the Theme tab. Change time. Turn it back on.</td><td data-label="Expected">Off: HUD keeps the base theme colours. On: HUD adapts again without needing a rejoin.</td><td data-label="Priority">P1</td></tr>
+<tr><td data-label="ID">TC-07</td><td data-label="Area">Toggle default</td><td data-label="Steps">Join with a player who has never changed the setting. Open the Theme tab.</td><td data-label="Expected">Toggle is on by default.</td><td data-label="Priority">P2</td></tr>
+<tr><td data-label="ID">TC-08</td><td data-label="Area">All themes</td><td data-label="Steps">Switch through all five themes at day and at night.</td><td data-label="Expected">Each theme is readable in both. Bright themes are not glaring in daytime.</td><td data-label="Priority">P2</td></tr>
+<tr><td data-label="ID">TC-09</td><td data-label="Area">Theme switch mid-transition</td><td data-label="Steps">Start a dusk transition, then change theme halfway through.</td><td data-label="Expected">New theme applies cleanly. No mixed colours or flicker.</td><td data-label="Priority">P3</td></tr>
+<tr><td data-label="ID">TC-10</td><td data-label="Area">Rejoin and respawn</td><td data-label="Steps">Set time to night. Leave and rejoin. Then respawn. Repeat with the toggle off.</td><td data-label="Expected">HUD shows the correct colours for the current time straight after loading. Toggle setting behaves as designed (<span class="ph">[saved or reset: confirm]</span>).</td><td data-label="Priority">P1</td></tr>
+<tr><td data-label="ID">TC-11</td><td data-label="Area">Mobile layout</td><td data-label="Steps">On a phone (live) and the Studio emulator, check the HUD at day and night.</td><td data-label="Expected">Layout unchanged: hotbar and level bar fully on screen, hamburger menu works. Colours adapt the same as on PC.</td><td data-label="Priority">P1</td></tr>
+<tr><td data-label="ID">TC-12</td><td data-label="Area">Places and Studio vs live</td><td data-label="Steps">Repeat TC-01 and TC-06 in each live place and compare with Studio.</td><td data-label="Expected">Same behaviour in Hub, TD Survival, Incrediblox and Cooking, and in Studio vs live.</td><td data-label="Priority">P2</td></tr>
+</tbody></table>
+<h3>Risks</h3><table class="stack"><thead><tr><th scope="col">Risk</th><th scope="col">How I reduce it</th></tr></thead><tbody>
+<tr><td data-label="Risk">Studio and live behave differently.</td><td data-label="How I reduce it">Run P1 cases on the published game, not just Studio.</td></tr>
+<tr><td data-label="Risk">Frame time is only measured in Studio, not on low-end phones.</td><td data-label="How I reduce it">Check mobile by feel and screen recording. Note any stutter for a follow-up measurement.</td></tr>
+<tr><td data-label="Risk">Panels that recolour on open might flash the old colour first.</td><td data-label="How I reduce it">TC-05 and frame-by-frame review of recordings.</td></tr>
+<tr><td data-label="Risk">Some themes may lose contrast at night or be too bright by day.</td><td data-label="How I reduce it">TC-08 covers every theme at both times.</td></tr>
+<tr><td data-label="Risk">Small test group (one main tester, limited devices).</td><td data-label="How I reduce it">List the exact devices used in the sign-off. Ask a second tester for a mobile pass if possible.</td></tr>
+<tr><td data-label="Risk">Transitions are slow to wait for naturally.</td><td data-label="How I reduce it">Use the /time command, plus one natural transition to confirm.</td></tr>
+</tbody></table>
+<h3>Sign-off</h3><dl class="fields"><dt>Tested by</dt><dd>SleepyMie</dd><dt>Build</dt><dd><span class="ph">[version]</span></dd><dt>Devices</dt><dd><span class="ph">[PC model / OS]</span>, <span class="ph">[phone model / OS]</span></dd><dt>Result</dt><dd><span class="ph">[Pass / Pass with known issues / Fail]</span></dd><dt>Open issues</dt><dd><span class="ph">[bug IDs or none]</span></dd><dt>Release approved by</dt><dd><span class="ph">[name / role]</span>  Date: <span class="ph">[date]</span></dd></dl>
+</section>
+<a class="btn ghost back" href="index.html#work">&larr; Back to portfolio</a>
+</article>
+</main>
+<footer><div class="wrap">&copy; 2026 SleepyMie</div></footer>
+</body>
+</html>
