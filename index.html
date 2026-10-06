@@ -13,6 +13,7 @@
 <script src="theme.js" defer></script>
 </head>
 <body>
+<div class="sky" aria-hidden="true"><div class="orbs"><span class="orb o1"></span><span class="orb o2"></span><span class="orb o3"></span><span class="orb o4"></span><span class="orb o5"></span><span class="orb o6"></span><span class="star t1"></span><span class="star t2"></span><span class="star t3"></span><span class="star t4"></span><span class="star t5"></span><span class="star t6"></span><span class="star t7"></span><span class="star t8"></span></div><div class="clouds"><span class="cloud c1"></span><span class="cloud c2"></span><span class="cloud c3"></span><span class="cloud c4"></span><span class="cloud c5"></span><span class="cloud c6"></span></div></div>
 <header class="nav"><div class="wrap">
   <a class="brand" href="#top"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M6 27V9l6 5h8l6-5v18c0 1-1 2-2 2H8c-1 0-2-1-2-2z" fill="currentColor"/><circle class="logo-face" cx="12.5" cy="19" r="1.6"/><circle class="logo-face" cx="19.5" cy="19" r="1.6"/><path class="logo-mouth" d="M14.5 23q1.5 1.2 3 0" stroke-width="1.4" fill="none" stroke-linecap="round"/></svg>SleepyMie</a>
   <nav aria-label="Main"><ul>
@@ -28,18 +29,53 @@
 
 <main id="top" class="wrap">
   <section class="hero">
-    <span class="tag">Junior QA / Game Tester</span>
-    <h1>SleepyMie</h1>
-    <p class="lead">Junior QA / game tester. I find what breaks, narrow it down, and make sure it's really fixed.</p>
-    <div class="btns">
-      <a class="btn primary" href="case-study-1.html">Read my case study</a>
-      <a class="btn ghost" href="#contact">Get in touch</a>
+    <div class="hero-bg" aria-hidden="true">
+      <span class="blob b1"></span><span class="blob b2"></span><span class="blob b3"></span>
+      <span class="spark s1"><svg viewBox="0 0 10 10"><path d="M5 0q.6 4.4 5 5-4.4.6-5 5-.6-4.4-5-5 4.4-.6 5-5z"/></svg></span><span class="spark s2"><svg viewBox="0 0 10 10"><path d="M5 0q.6 4.4 5 5-4.4.6-5 5-.6-4.4-5-5 4.4-.6 5-5z"/></svg></span><span class="spark s3"><svg viewBox="0 0 10 10"><path d="M5 0q.6 4.4 5 5-4.4.6-5 5-.6-4.4-5-5 4.4-.6 5-5z"/></svg></span><span class="spark s4"><svg viewBox="0 0 10 10"><path d="M5 0q.6 4.4 5 5-4.4.6-5 5-.6-4.4-5-5 4.4-.6 5-5z"/></svg></span>
+      <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    </div>
+    <div class="hero-grid">
+      <div class="hero-text">
+        <span class="tag">Junior QA / Game Tester</span>
+        <p class="hello">Heya! <span class="wave">👋</span> I'm</p>
+        <h1>SleepyMie</h1>
+        <p class="lead">Junior QA / game tester. I find what breaks, narrow it down, and make sure it's really fixed.</p>
+        <div class="btns">
+          <a class="btn primary" href="case-study-1.html">Read my case study</a>
+          <a class="btn ghost" href="#contact">Get in touch</a>
+        </div>
+      </div>
+      <div class="hero-side">
+        <div class="mascot" aria-hidden="true">
+          <svg class="mascot-cat" viewBox="0 0 32 32"><path d="M6 27V9l6 5h8l6-5v18c0 1-1 2-2 2H8c-1 0-2-1-2-2z" fill="currentColor"/><g class="eyes"><circle class="logo-face" cx="12.5" cy="19" r="1.6"/><circle class="logo-face" cx="19.5" cy="19" r="1.6"/></g><path class="logo-mouth" d="M14.5 23q1.5 1.2 3 0" stroke-width="1.4" fill="none" stroke-linecap="round"/></svg>
+          <span class="mascot-shadow"></span>
+        </div>
+        <div class="now-card">
+          <h2 class="now-title"><span class="now-dot" aria-hidden="true"></span>Right now</h2>
+          <ul>
+            <li><span class="emo" aria-hidden="true">🎮</span><span><strong>Testing:</strong> ChocoNeko on Roblox</span></li>
+            <li><span class="emo" aria-hidden="true">📚</span><span><strong>Learning:</strong> Postman API testing</span></li>
+            <li><span class="emo" aria-hidden="true">🔎</span><span><strong>Looking for:</strong> a remote junior QA / game tester role</span></li>
+          </ul>
+        </div>
+      </div>
     </div>
   </section>
 
   <section id="about">
     <h2>About</h2>
     <p>I've finished school and have spent about a year building and testing games. On my Roblox game, ChocoNeko, AI agents write and fix the code. I set the direction, playtest in Studio and in the live game (the published version, not yet publicly launched), report what's wrong, and approve changes.</p>
+    <div class="inspire">
+      <p class="inspire-title"><span aria-hidden="true">✨</span> Games that inspire me</p>
+      <ul class="chips games" aria-label="Games that inspire me">
+        <li><a href="about-me.html">Palworld</a></li>
+        <li><a href="about-me.html">Terraria</a></li>
+        <li><a href="about-me.html">Minecraft</a></li>
+        <li><a href="about-me.html">Deltarune</a></li>
+        <li><a href="about-me.html">Undertale</a></li>
+        <li><a href="about-me.html">Doki Doki Literature Club</a></li>
+      </ul>
+    </div>
   </section>
 
   <section id="work">
@@ -97,6 +133,6 @@
   </section>
 </main>
 
-<footer><div class="wrap">&copy; 2026 SleepyMie</div></footer>
+<footer><div class="wrap footer-row"><span>&copy; 2026 SleepyMie</span><span class="made">Made with <span aria-label="love" role="img">💙</span> and lots of playtesting.</span></div></footer>
 </body>
 </html>
