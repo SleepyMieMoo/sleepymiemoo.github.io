@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Case Study 2: Shipping safely and keeping the game smooth | SleepyMie</title>
+<meta name="description" content="Testing for performance and release work on ChocoNeko, a Roblox game: a costly recolour, a chat safety fix, and nothing published untested.">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="nav"><div class="wrap">
+  <a class="brand" href="index.html"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M6 27V9l6 5h8l6-5v18c0 1-1 2-2 2H8c-1 0-2-1-2-2z" fill="#7a4a33"/><circle cx="12.5" cy="19" r="1.6" fill="#fbf6f0"/><circle cx="19.5" cy="19" r="1.6" fill="#fbf6f0"/><path d="M14.5 23q1.5 1.2 3 0" stroke="#fbf6f0" stroke-width="1.4" fill="none" stroke-linecap="round"/></svg>SleepyMie</a>
+  <nav aria-label="Main"><ul><li class="hide-sm"><a href="index.html#about">About</a></li><li><a href="index.html#work">Work</a></li><li><a href="qa-samples.html">QA samples</a></li><li><a href="index.html#contact">Contact</a></li></ul></nav>
+</div></header>
+<main class="wrap">
+<article class="cs">
+<h1>Case Study 2: Shipping safely and keeping the game smooth</h1>
+<p><strong>In short:</strong> testing for performance and release work: a costly recolour, a chat safety fix, and nothing published untested.</p>
+<h2>What I do on this project</h2>
+<p>ChocoNeko is a Roblox game with four places: Hub, TD Survival, Incrediblox and Cooking. It's published but not publicly launched yet. I've led it for about six months, since April 2026. AI agents write and fix the code, and a reviewer bot reviews every pull request. I set direction, playtest, and approve each reviewed pull request. I work alongside an artist, a writer and a world builder, who give the game its look, story and world.</p>
+<hr />
+<h2>1. Day/night colour changes: about 12 ms down to about 2 ms, in two steps</h2>
+<p><strong>The problem:</strong> The HUD and chat gradually change colour from day to night. That recolour was expensive and could make the chat flicker. The flicker was flagged to me after an earlier fix, and I then saw it myself in playtests.</p>
+<p><strong>How it was measured:</strong> In-game timing counters, read during Studio playtests on my PC, including one run of about 8 minutes. These are Studio numbers from one PC, not the published game or a phone.</p>
+<p><strong>Step 1:</strong> Chat repaint cost used to grow with message history. The first fix made it independent of history and recoloured rows in place. The chat's cost per frame went from about 12 ms, with spikes up to about 30 ms, to about 5 ms.</p>
+<p><strong>Step 2:</strong> The chat recolour was then spread across several frames instead of one. Most frames came down to about 2 ms, and the visible flicker was gone.</p>
+<p><strong>My part:</strong> I tested each step in Studio, so if one had made things worse, it would be clear which.</p>
+<hr />
+<h2>2. A chat filter fix before public launch (Oct 2)</h2>
+<p><strong>What happened:</strong> We found and fixed a case where chat styling data could bring back words the filter had hidden, before public launch.</p>
+<p><strong>My part:</strong> I tested the fix myself, both in Studio and on the published game, to be sure.</p>
+<p><strong>Why it matters:</strong> On Roblox, chat filtering protects players, many of whom are kids. Anything that shows filtered words to another player is a safety problem, not a cosmetic bug.</p>
+<hr />
+<h2>3. A publish script that only touches what changed</h2>
+<p><strong>Why it started:</strong> I used to publish each place by hand in Studio. Once shared systems spanned all four places, doing that by hand got tedious and easy to get wrong, so I proposed a publish pipeline. The agents built it with Lune and Roblox Open Cloud, and it's designed to be careful:</p>
+<ul>
+<li>Nothing uploads unless the command explicitly says to publish, confirms it, and includes a note.</li>
+<li>A plan step lists which places would change before anything happens.</li>
+<li>It downloads each published place first and puts the new code on top, so anything built in Studio is kept.</li>
+<li>If a place is open in Studio, the upload stops with a "server busy" error instead of overwriting it.</li>
+</ul>
+<p>A "changed" mode picks only the places affected by changed files. Shared code, like the HUD, still means all four places.</p>
+<p><strong>Why that matters to me as a tester:</strong> Every published place could break, so re-uploading untouched places adds risk for nothing. It also shows what to retest.</p>
+<hr />
+<h2>4. Nothing is published until I've tested it</h2>
+<p><strong>How a change gets out:</strong></p>
+<ol>
+<li>An agent opens a pull request, the reviewer bot reviews it, and I approve it.</li>
+<li>It's merged to main, and main is pulled onto my PC.</li>
+<li>Rojo live-syncs the code into Studio (one Rojo server per place), and I test the change there.</li>
+<li>Nothing publishes until I say "publish".</li>
+</ol>
+<p><strong>After publishing:</strong> I always recheck on the published place. It's the real build, and the MicroProfiler is less noisy there than in Studio. For example, I tested a hover fix in Incrediblox in Studio, then rechecked it on the published place. The average frame time went from about 9.1 ms to about 6.6 ms in the MicroProfiler.</p>
+<p><strong>Checking before fixing:</strong> I retested an Alt keybind report on the published game and confirmed it was already working, so nothing needed fixing. Checking first avoids changing code that isn't broken.</p>
+<p><strong>Why I keep that gate:</strong> A reviewed pull request means the code reads well, not that the game plays well.</p>
+<hr />
+<h2>What I learned</h2>
+<ul>
+<li><strong>Performance is testable.</strong> Timing counters turn "it seems heavy" into before/after numbers.</li>
+<li><strong>Know where your numbers come from.</strong> Studio on one PC isn't a phone or the published game, so I say which is which.</li>
+<li><strong>Severity isn't about visibility.</strong> A chat filter problem outranks a cosmetic glitch because it affects player safety.</li>
+<li><strong>Smaller releases are easier to test.</strong> Publishing only what changed shows what to retest.</li>
+</ul>
+<h2>What I'm looking for</h2>
+<p>A junior QA or game tester role where I can learn proper performance testing and release checks with a team.</p>
+<a class="btn ghost back" href="index.html#work">&larr; Back to portfolio</a>
+</article>
+</main>
+<footer><div class="wrap">&copy; 2026 SleepyMie</div></footer>
+</body>
+</html>
