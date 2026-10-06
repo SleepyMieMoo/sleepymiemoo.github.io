@@ -6,19 +6,24 @@
 <meta name="color-scheme" content="light dark">
 <meta name="theme-color" content="#e0eefc" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0e1626" media="(prefers-color-scheme: dark)">
-<script>(function(d){var t,f,r,n=navigator,c=n.connection,m=function(q){return!!(window.matchMedia&&matchMedia(q).matches)};try{t=localStorage.getItem('theme');f=localStorage.getItem('fx');r=localStorage.getItem('reduceMotion')}catch(e){}if(t==='light'||t==='dark')d.setAttribute('data-theme',t);if(f!=='full'&&f!=='lite'&&f!=='off'){f=(m('(max-width:600px)')||(n.hardwareConcurrency&&n.hardwareConcurrency<=4)||(c&&c.saveData))?'lite':'full';d.setAttribute('data-fx-auto',f)}d.setAttribute('data-fx',f);d.setAttribute('data-motion',r==='1'||(r!=='0'&&m('(prefers-reduced-motion: reduce)'))?'reduce':'ok')})(document.documentElement)</script>
+<script>(function(d){d.classList.add('js');var t,f,r,n=navigator,c=n.connection,m=function(q){return!!(window.matchMedia&&matchMedia(q).matches)};try{t=localStorage.getItem('theme');f=localStorage.getItem('fx');r=localStorage.getItem('reduceMotion')}catch(e){}if(t==='light'||t==='dark')d.setAttribute('data-theme',t);if(f!=='full'&&f!=='lite'&&f!=='off'){f=(m('(max-width:600px)')||(n.hardwareConcurrency&&n.hardwareConcurrency<=4)||(c&&c.saveData))?'lite':'full';d.setAttribute('data-fx-auto',f)}d.setAttribute('data-fx',f);d.setAttribute('data-motion',r==='1'||(r!=='0'&&m('(prefers-reduced-motion: reduce)'))?'reduce':'ok')})(document.documentElement)</script>
 <title>About me | SleepyMie</title>
 <meta name="description" content="About SleepyMie, junior QA and game tester: what I love about games, how I work, and notes from my AI teammates.">
+<link rel="icon" href="favicon.ico" sizes="32x32">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="stylesheet" href="styles.css">
 <script src="theme.js" defer></script>
 <script src="settings.js" defer></script>
+<script src="menu.js" defer></script>
 </head>
 <body>
 <header class="nav"><div class="wrap">
   <a class="brand" href="index.html"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M6 27V9l6 5h8l6-5v18c0 1-1 2-2 2H8c-1 0-2-1-2-2z" fill="currentColor"/><circle class="logo-face" cx="12.5" cy="19" r="1.6"/><circle class="logo-face" cx="19.5" cy="19" r="1.6"/><path class="logo-mouth" d="M14.5 23q1.5 1.2 3 0" stroke-width="1.4" fill="none" stroke-linecap="round"/></svg>SleepyMie</a>
-  <nav aria-label="Main"><ul><li class="hide-sm"><a href="index.html#about">Overview</a></li><li><a href="index.html#work">Work</a></li><li><a href="qa-samples.html">QA samples</a></li><li><a href="about-me.html" aria-current="page">About me</a></li><li><a href="index.html#contact">Contact</a></li></ul></nav>
+  <nav aria-label="Main" id="main-nav"><ul><li class="hide-sm"><a href="index.html#about">Overview</a></li><li><a href="index.html#work">Work</a></li><li><a href="qa-samples.html">QA samples</a></li><li><a href="about-me.html" aria-current="page">About me</a></li><li><a href="index.html#contact">Contact</a></li></ul></nav>
   <button type="button" class="theme-toggle" id="theme-toggle" data-mode="system" aria-label="Theme: System. Switch to Light" title="Theme: System" hidden><svg class="i-system" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg><svg class="i-light" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg><svg class="i-dark" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg><span class="theme-label">System</span></button>
   <button type="button" class="settings-toggle" id="settings-toggle" aria-haspopup="dialog" aria-expanded="false" aria-label="Site settings" title="Site settings" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
+  <button type="button" class="menu-toggle" id="menu-toggle" aria-expanded="false" aria-controls="main-nav" aria-label="Menu" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path class="i-open" d="M4 7h16M4 12h16M4 17h16"/><path class="i-close" d="M6 6l12 12M18 6L6 18"/></svg></button>
 </div></header>
 <main class="wrap">
 <article class="cs about">

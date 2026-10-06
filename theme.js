@@ -1,5 +1,5 @@
 /* Theme switch: System (default) -> Light -> Dark. Saved in localStorage.
-   window.siteTheme lets the settings panel read/set the same mode; changes fire "sitethemechange" on document. */
+   The header button is the only theme control; window.siteTheme.set() lets the settings panel's Reset go back to System. */
 (function () {
   var KEY = 'theme', ORDER = ['system', 'light', 'dark'];
   var LABEL = { system: 'System', light: 'Light', dark: 'Dark' };
@@ -26,12 +26,6 @@
     var label = btn.querySelector('.theme-label');
     if (label) label.textContent = LABEL[mode];
   }
-  function announce() {
-    var ev;
-    try { ev = new CustomEvent('sitethemechange', { detail: { mode: mode } }); }
-    catch (e) { ev = document.createEvent('CustomEvent'); ev.initCustomEvent('sitethemechange', false, false, { mode: mode }); }
-    document.dispatchEvent(ev);
-  }
   function set(next, store) {
     if (ORDER.indexOf(next) < 0) next = 'system';
     mode = next;
@@ -40,12 +34,11 @@
     }
     apply(mode);
     render(btn, mode);
-    announce();
   }
   var btn = document.getElementById('theme-toggle');
   var mode = saved();
   apply(mode);
-  window.siteTheme = { get: function () { return mode; }, set: function (m) { set(m); } };
+  window.siteTheme = { set: function (m) { set(m); } };
   window.addEventListener('storage', function (e) {
     if (e.key === KEY || e.key === null) set(saved(), false);
   });

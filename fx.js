@@ -37,8 +37,8 @@
   var orbs = list('.orb').map(function (el) {
     return {
       el: el, cy: 0, o: 0.5,
-      ax: between(22, 60), ay: between(16, 44),
-      fx1: TAU / between(19, 37), fx2: TAU / between(7, 14), fy1: TAU / between(23, 41), fy2: TAU / between(9, 17),
+      ax: between(34, 84), ay: between(26, 62),
+      fx1: TAU / between(13, 24), fx2: TAU / between(6, 11), fy1: TAU / between(15, 27), fy2: TAU / between(7, 12),
       px1: between(0, TAU), px2: between(0, TAU), py1: between(0, TAU), py2: between(0, TAU),
       fs: TAU / between(11, 23), ps: between(0, TAU), sa: between(0.05, 0.12),
       fo: TAU / between(9, 17), po: between(0, TAU),

@@ -310,3 +310,25 @@ header.nav .wrap{position:relative}
   .settings-toggle{order:2;margin-left:-4px}
   .settings-panel{right:12px;top:calc(100% + 6px)}
 }
+.sp-note{margin-top:8px;padding:8px 10px;border-radius:10px;background:var(--soft);color:var(--text)}
+/* Small-screen menu (menu.js). Without JS the two-row header above is kept. */
+.menu-toggle{display:none;align-items:center;justify-content:center;flex-shrink:0;width:32px;height:32px;padding:0;border:1px solid var(--border);border-radius:999px;background:var(--card);color:var(--text);cursor:pointer}
+.menu-toggle:hover,.menu-toggle[aria-expanded='true']{border-color:var(--accent);color:var(--accent)}
+.menu-toggle:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.menu-toggle svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+.menu-toggle .i-close,.menu-toggle[aria-expanded='true'] .i-open{display:none}
+.menu-toggle[aria-expanded='true'] .i-close{display:inline}
+@media(max-width:760px){
+  .js header.nav .wrap{flex-wrap:nowrap;height:56px;padding:0 16px;row-gap:0}
+  .js .menu-toggle:not([hidden]){display:inline-flex;order:3;margin-left:-4px}
+  .js header.nav nav{display:none;position:absolute;top:calc(100% + 1px);left:0;right:0;z-index:9;max-height:calc(100vh - 57px);overflow-y:auto;background:var(--card);border-bottom:1px solid var(--border);box-shadow:0 16px 30px -18px var(--shadow-lift)}
+  .js header.nav.menu-open nav{display:block;animation:menu-in .18s ease-out}
+  .js header.nav nav ul{display:block;height:auto;padding:6px 0 10px;font-size:16px}
+  .js header.nav nav li,.js header.nav nav li.hide-sm{display:block}
+  .js header.nav nav a{display:block;padding:11px 20px;color:var(--text);border-left:3px solid transparent}
+  .js header.nav nav a:hover{color:var(--accent);background:var(--tint)}
+  .js header.nav nav a[aria-current="page"]{border-left-color:var(--accent);font-weight:700}
+  .js header.nav nav a:focus-visible{outline-offset:-3px}
+  .js [id]{scroll-margin-top:72px}
+}
+@keyframes menu-in{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
