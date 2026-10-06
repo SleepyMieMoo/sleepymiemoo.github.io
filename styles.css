@@ -385,3 +385,11 @@ main a:not([class]):not(.chips a):hover,main a:not([class]):not(.chips a):focus-
 [data-motion='reduce'] .rv{opacity:1!important;transform:none!important}
 [data-motion='reduce'] .card::after,[data-motion='reduce'] .quote-card::after,[data-motion='reduce'] ul.habits>li::after,[data-motion='reduce'] .btn.primary::after,[data-motion='reduce'] .name-shine,[data-motion='reduce'] .star-shower{display:none!important}
 [data-motion='reduce'] .mascot-cat .face{transform:none!important}
+/* Interactive touches Off (Site settings, html[data-touches='off']): glow, shine, squish, reveals, shimmer, gaze/hop
+   and the animated shower are off. Link underlines and focus rings stay (accessibility). Buttons keep the site's
+   original press (scale .98). */
+[data-touches='off'] .rv{opacity:1!important;transform:none!important}
+[data-touches='off'] .card::after,[data-touches='off'] .quote-card::after,[data-touches='off'] ul.habits>li::after,[data-touches='off'] .btn.primary::after,[data-touches='off'] .name-shine,[data-touches='off'] .star-shower{display:none!important}
+[data-touches='off'] .mascot-cat .face{transform:none!important}
+[data-touches='off'] .cat-bubble{animation:none}
+[data-touches='off']:not([data-motion='reduce']) .btn:active{transform:translateY(0) scale(.98);transition-duration:.18s}

@@ -1,5 +1,6 @@
-/* Site settings panel: Effects (Full / Lite / Off) and Reduce motion. Theme lives on the header button.
-   Saved in localStorage ("fx", "reduceMotion"); the inline head script applies them before first paint.
+/* Site settings panel: Effects (Full / Lite / Off), Interactive touches (On / Off) and Reduce motion.
+   Theme lives on the header button. Saved in localStorage ("fx", "touches", "reduceMotion"); the inline head
+   script applies them before first paint (data-fx, data-touches, data-motion on <html>).
    An explicit Reduce motion choice beats the OS prefers-reduced-motion setting. */
 (function () {
   var root = document.documentElement;
@@ -16,10 +17,12 @@
   }
   function state() {
     var f = load('fx'), r = load('reduceMotion'), a = root.getAttribute('data-fx-auto');
+    var touches = load('touches') !== '0';
     var fxSet = FX.indexOf(f) > -1, rmSet = r === '1' || r === '0';
     return {
       fx: fxSet ? f : (FX.indexOf(a) > -1 ? a : autoFx()),
       fxAuto: !fxSet,
+      touches: touches,
       rm: rmSet ? r === '1' : !!(rmQuery && rmQuery.matches),
       rmAuto: !rmSet
     };
@@ -27,6 +30,7 @@
   function apply() {
     var s = state();
     root.setAttribute('data-fx', s.fx);
+    root.setAttribute('data-touches', s.touches ? 'on' : 'off');
     root.setAttribute('data-motion', s.rm ? 'reduce' : 'ok');
     return s;
   }
@@ -51,14 +55,19 @@
     '<button type="button" class="sp-close" aria-label="Close settings"><span aria-hidden="true">&times;</span></button></div>' +
     '<fieldset class="sp-group" aria-describedby="sp-fx-hint"><legend>Effects</legend><div class="seg">' + opts + '</div>' +
     '<p class="sp-hint" id="sp-fx-hint"></p></fieldset>' +
+    '<div class="sp-row"><span class="sp-label" id="sp-tc-label">Interactive touches</span>' +
+    '<button type="button" class="switch sp-tc" role="switch" aria-checked="true" aria-labelledby="sp-tc-label" aria-describedby="sp-tc-hint"></button></div>' +
+    '<p class="sp-hint" id="sp-tc-hint"></p>' +
     '<div class="sp-row"><span class="sp-label" id="sp-rm-label">Reduce motion</span>' +
-    '<button type="button" class="switch" role="switch" aria-checked="false" aria-labelledby="sp-rm-label" aria-describedby="sp-rm-hint"></button></div>' +
+    '<button type="button" class="switch sp-rm" role="switch" aria-checked="false" aria-labelledby="sp-rm-label" aria-describedby="sp-rm-hint"></button></div>' +
     '<p class="sp-hint" id="sp-rm-hint"></p>' +
     '<div class="sp-foot"><button type="button" class="sp-reset">Reset to defaults</button></div>';
   header.appendChild(panel);
 
   var fxInputs = panel.querySelectorAll('input[name="sp-fx"]');
-  var sw = panel.querySelector('.switch');
+  var sw = panel.querySelector('.sp-rm');
+  var tcSw = panel.querySelector('.sp-tc');
+  var tcHint = panel.querySelector('#sp-tc-hint');
   var fxHint = panel.querySelector('#sp-fx-hint');
   var rmHint = panel.querySelector('#sp-rm-hint');
 
@@ -66,6 +75,10 @@
     var s = apply();
     for (var i = 0; i < fxInputs.length; i++) fxInputs[i].checked = fxInputs[i].value === s.fx;
     sw.setAttribute('aria-checked', s.rm ? 'true' : 'false');
+    tcSw.setAttribute('aria-checked', s.touches ? 'true' : 'false');
+    tcHint.textContent = (s.rm && s.touches)
+      ? 'Motion-based touches are paused while Reduce motion is on.'
+      : 'Card glow, button shine, scroll reveals and cat reactions.';
     fxHint.textContent = s.rm
       ? 'Paused while Reduce motion is on.'
       : (s.fxAuto ? FX_LABEL[s.fx] + ' was picked for this device.' : 'Saved on this device.');
@@ -82,8 +95,12 @@
     save('reduceMotion', sw.getAttribute('aria-checked') === 'true' ? '0' : '1');
     render();
   });
+  tcSw.addEventListener('click', function () {
+    save('touches', tcSw.getAttribute('aria-checked') === 'true' ? '0' : null);   // default On: only "off" is stored
+    render();
+  });
   panel.querySelector('.sp-reset').addEventListener('click', function () {
-    save('fx', null); save('reduceMotion', null);
+    save('fx', null); save('reduceMotion', null); save('touches', null);
     root.removeAttribute('data-fx-auto');
     if (window.siteTheme) window.siteTheme.set('system');
     render();
@@ -120,7 +137,7 @@
   btn.addEventListener('click', function () { if (isOpen()) close(true); else open(); });
 
   window.addEventListener('storage', function (e) {
-    if (e.key === 'fx' || e.key === 'reduceMotion' || e.key === null) render();
+    if (e.key === 'fx' || e.key === 'touches' || e.key === 'reduceMotion' || e.key === null) render();
   });
   if (rmQuery) {
     if (rmQuery.addEventListener) rmQuery.addEventListener('change', render); else if (rmQuery.addListener) rmQuery.addListener(render);

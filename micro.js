@@ -1,16 +1,20 @@
 /* Micro-interactions: card glow, reveal on scroll, mascot (look, pet, secret star shower) and the night name shimmer.
-   All motion is skipped when Reduce motion is on (html[data-motion="reduce"]); Effects Off keeps only light touches.
-   Pointer work is rAF-throttled: one layout read, then style writes, per frame. */
+   Active only when Interactive touches is On (html[data-touches] != "off") and Reduce motion is off
+   (html[data-motion] != "reduce"); otherwise listeners/observers are removed and the cat secret falls back to a
+   static burst. Settings changes are picked up live via a MutationObserver on <html>. Effects Off keeps only light
+   touches. Pointer work is rAF-throttled: one layout read, then style writes, per frame. */
 (function () {
   var root = document.documentElement;
   var reduce = function () { return root.getAttribute('data-motion') === 'reduce'; };
   var fxOff = function () { return root.getAttribute('data-fx') === 'off'; };
+  var active = function () { return root.getAttribute('data-touches') !== 'off' && !reduce(); };
   var finePointer = window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)');
   var SPARK = '<svg viewBox="0 0 10 10" aria-hidden="true"><path d="M5 0q.6 4.4 5 5-4.4.6-5 5-.6-4.4-5-5 4.4-.6 5-5z"/></svg>';
 
   /* 1. Reveal on scroll. Only elements below the fold are hidden, and only once JS is running. */
+  var io = null, rvItems = [], rvTimers = [];
   function setupReveal() {
-    if (reduce() || !('IntersectionObserver' in window)) return;
+    if (io || !active() || !('IntersectionObserver' in window)) return;
     var sel = [
       'main section:not(.hero) > :not(.grid):not(.habits)', '.grid > .card', 'ul.habits > li',
       'article.cs > :not(section):not(h1):not(.habits)', 'article.cs > section > :not(.quotes)', '.quotes > figure'
@@ -23,7 +27,7 @@
     });
     if (!items.length) return;
     root.classList.add('reveal-on');
-    var io = new IntersectionObserver(function (entries) {
+    io = new IntersectionObserver(function (entries) {
       var n = 0;
       entries.forEach(function (en) {
         if (!en.isIntersecting) return;
@@ -31,10 +35,19 @@
         io.unobserve(el);
         el.style.transitionDelay = delay + 'ms';
         el.classList.add('rv-in');
-        setTimeout(function () { el.classList.remove('rv', 'rv-in'); el.style.transitionDelay = ''; }, 900 + delay);
+        rvTimers.push(setTimeout(function () { el.classList.remove('rv', 'rv-in'); el.style.transitionDelay = ''; }, 900 + delay));
       });
     }, { rootMargin: '0px 0px -8% 0px', threshold: 0 });
+    rvItems = items;
     items.forEach(function (el) { el.classList.add('rv'); io.observe(el); });
+  }
+  function teardownReveal() {
+    if (!io) return;
+    io.disconnect(); io = null;
+    rvTimers.forEach(clearTimeout); rvTimers = [];
+    rvItems.forEach(function (el) { el.classList.remove('rv', 'rv-in'); el.style.transitionDelay = ''; });
+    rvItems = [];
+    root.classList.remove('reveal-on');
   }
 
   /* 2. Night name shimmer: an aria-hidden copy seen through a moving window (CSS animates transforms only). */
@@ -73,7 +86,7 @@
       pets = pets.filter(function (t) { return now - t < 1800; });
       pets.push(now);
       if (pets.length >= 5) { pets = []; secret(); return; }
-      if (reduce()) { bubble('purr', 1200); return; }
+      if (!active()) { bubble('purr', 1200); return; }   // static reaction keeps the secret discoverable
       cat.classList.remove('hop');
       void cat.offsetWidth;            // restart the hop animation on rapid pets (click-time only)
       cat.classList.add('hop');
@@ -96,7 +109,7 @@
     bubble('meow \u2728', 1600);
     live.textContent = '';
     setTimeout(function () { live.textContent = 'Meow! You found the secret.'; }, 30);
-    if (reduce()) { staticBurst(); return; }
+    if (!active()) { staticBurst(); return; }
     shower(fxOff() ? 10 : 24);
   }
   function staticBurst() {
@@ -154,7 +167,7 @@
   var px = 0, py = 0, target = null, raf = 0, gazing = false;
   function frame() {
     raf = 0;
-    if (reduce()) { resetGaze(); return; }
+    if (!active()) { resetGaze(); return; }
     var card = target && target.closest ? target.closest(GLOW) : null;
     var cr = card ? card.getBoundingClientRect() : null;
     var mr = face ? cat.getBoundingClientRect() : null;
@@ -170,20 +183,45 @@
     }
   }
   function resetGaze() { if (face && gazing) { face.style.transform = ''; gazing = false; } }
+  function onMove(e) {
+    if (e.pointerType === 'touch') return;
+    px = e.clientX; py = e.clientY; target = e.target;
+    if (!raf) raf = requestAnimationFrame(frame);
+  }
+  var pointerOn = false;
   function setupPointer() {
-    if (!finePointer || !finePointer.matches) return;
+    if (pointerOn || !active() || !finePointer || !finePointer.matches) return;
+    pointerOn = true;
     root.classList.add('glow-on');
-    document.addEventListener('pointermove', function (e) {
-      if (e.pointerType === 'touch') return;
-      px = e.clientX; py = e.clientY; target = e.target;
-      if (!raf) raf = requestAnimationFrame(frame);
-    }, { passive: true });
+    document.addEventListener('pointermove', onMove, { passive: true });
     root.addEventListener('pointerleave', resetGaze);   // pointer left the page
     window.addEventListener('blur', resetGaze);
+  }
+  function teardownPointer() {
+    if (!pointerOn) return;
+    pointerOn = false;
+    root.classList.remove('glow-on');
+    document.removeEventListener('pointermove', onMove, { passive: true });
+    root.removeEventListener('pointerleave', resetGaze);
+    window.removeEventListener('blur', resetGaze);
+    if (raf) { cancelAnimationFrame(raf); raf = 0; }
+    resetGaze();
+  }
+
+  /* 5. Follow the settings live: (re)attach when touches are allowed, detach everything when not. */
+  function sync() {
+    if (active()) { setupPointer(); setupReveal(); }
+    else { teardownPointer(); teardownReveal(); }
+    if (finePointer && !finePointer.matches) teardownPointer();
   }
 
   setupShimmer();
   setupMascot();
-  setupPointer();
-  setupReveal();
+  sync();
+  if ('MutationObserver' in window) {
+    new MutationObserver(sync).observe(root, { attributes: true, attributeFilter: ['data-touches', 'data-motion'] });
+  }
+  if (finePointer) {
+    if (finePointer.addEventListener) finePointer.addEventListener('change', sync); else if (finePointer.addListener) finePointer.addListener(sync);
+  }
 })();
