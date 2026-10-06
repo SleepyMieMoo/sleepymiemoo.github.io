@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0e1626" media="(prefers-color-scheme: dark)">
 <script>(function(d){d.classList.add('js');var t,f,r,k,n=navigator,c=n.connection,m=function(q){return!!(window.matchMedia&&matchMedia(q).matches)};try{t=localStorage.getItem('theme');f=localStorage.getItem('fx');r=localStorage.getItem('reduceMotion');k=localStorage.getItem('touches')}catch(e){}if(t==='light'||t==='dark')d.setAttribute('data-theme',t);if(f!=='full'&&f!=='lite'&&f!=='off'){f=(m('(max-width:600px)')||(n.hardwareConcurrency&&n.hardwareConcurrency<=4)||(c&&c.saveData))?'lite':'full';d.setAttribute('data-fx-auto',f)}d.setAttribute('data-fx',f);d.setAttribute('data-touches',k==='0'?'off':'on');d.setAttribute('data-motion',r==='1'||(r!=='0'&&m('(prefers-reduced-motion: reduce)'))?'reduce':'ok')})(document.documentElement)</script>
 <title>QA writing samples | SleepyMie</title>
-<meta name="description" content="Sample bug reports and a test plan by SleepyMie, junior QA and game tester, based on real bugs from ChocoNeko, a Roblox game.">
+<meta name="description" content="Sample bug reports, a test plan and an API test report by SleepyMie, junior QA and game tester, based on real work on ChocoNeko, a Roblox game.">
 <link rel="icon" href="favicon.ico" sizes="32x32">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -29,11 +29,12 @@
 <main class="wrap">
 <article class="cs qa">
 <h1>QA writing samples</h1>
-<p>These are writing samples to show how I write bug reports and test plans. The two bug reports are retrospective write-ups of real bugs from ChocoNeko, my Roblox game, that have since been fixed. At the time I reported them in plain messages to the AI coding agents that write the code, so I've rewritten them here in a standard format. The test plan is a sample plan for a real change. Where I don't have an exact detail, such as the build version, I've left a placeholder in <span class="ph">[brackets]</span>.</p>
+<p>These are writing samples to show how I write bug reports, test plans and test reports. The two bug reports are retrospective write-ups of real bugs from ChocoNeko, my Roblox game, that have since been fixed. At the time I reported them in plain messages to the AI coding agents that write the code, so I've rewritten them here in a standard format. The test plan is a sample plan for a real change. The API test report is from my first real test run in Postman, on Roblox's public game APIs for ChocoNeko. Where I don't have an exact detail, such as the build version, I've left a placeholder in <span class="ph">[brackets]</span>.</p>
 <ul class="toc">
 <li><a href="#bug-1">Bug report 1: Phone and Backpack open, then close</a></li>
 <li><a href="#bug-2">Bug report 2: Free cam takes about 5 seconds to open</a></li>
 <li><a href="#test-plan">Test plan: HUD and chat day/night recolour</a></li>
+<li><a href="#api-report">API test report: Roblox public game APIs (Postman)</a></li>
 </ul>
 <hr />
 <section class="report" id="bug-1">
@@ -126,6 +127,56 @@
 <tr><td data-label="Risk">Transitions are slow to wait for naturally.</td><td data-label="How I reduce it">Use the /time command, plus one natural transition to confirm.</td></tr>
 </tbody></table>
 <h3>Sign-off</h3><dl class="fields"><dt>Tested by</dt><dd>SleepyMie</dd><dt>Build</dt><dd><span class="ph">[version]</span></dd><dt>Devices</dt><dd><span class="ph">[PC model / OS]</span>, <span class="ph">[phone model / OS]</span></dd><dt>Result</dt><dd><span class="ph">[Pass / Pass with known issues / Fail]</span></dd><dt>Open issues</dt><dd><span class="ph">[bug IDs or none]</span></dd><dt>Release approved by</dt><dd><span class="ph">[name / role]</span>  Date: <span class="ph">[date]</span></dd></dl>
+</section>
+<hr />
+<section class="report" id="api-report">
+<p class="kicker">API test report &middot; <span class="label">My first Postman test run, on real public APIs</span></p>
+<h2>Testing Roblox's public game APIs on ChocoNeko (Postman)</h2>
+<dl class="fields">
+<dt>Tester</dt><dd>SleepyMie</dd>
+<dt>Date</dt><dd>6 Oct 2026 (Asia/Manila)</dd>
+<dt>Tool</dt><dd>Postman Desktop (Windows)</dd>
+<dt>What I tested</dt><dd>6 public Roblox GET endpoints, called for my game ChocoNeko (placeId <code>129419556998762</code>, universeId <code>9997995956</code>). None of them need a login.</dd>
+<dt>Result</dt><dd><span class="status">All 6 returned 200 OK &middot; 20 of 20 recorded tests passed</span></dd>
+</dl>
+<h3>Summary</h3>
+<p>All 6 requests returned <code>200 OK</code>. 20 of 20 recorded tests passed across 5 requests. For request 2 I didn't record the test results, so I checked it by hand on a second run. I also made 3 observations that aren't bugs but are worth knowing.</p>
+<h3>Automated tests (4 per request)</h3>
+<p>Every request runs these three tests:</p>
+<ul><li>Status is 200</li><li>Content-Type is JSON</li><li>Body is parseable JSON</li></ul>
+<p>Each request also has one test that checks its own data:</p>
+<table class="stack datatests"><thead><tr><th scope="col">#</th><th scope="col">Request</th><th scope="col">Data test</th></tr></thead><tbody>
+<tr><td data-label="#">1</td><td data-label="Request">Resolve Place to Universe ID</td><td data-label="Data test">universeId matches collection variable</td></tr>
+<tr><td data-label="#">2</td><td data-label="Request">Get Game Details</td><td data-label="Data test">data array has at least one game object with name/playing/visits</td></tr>
+<tr><td data-label="#">3</td><td data-label="Request">Get Game Votes</td><td data-label="Data test">Vote row matches universeId and has numeric upVotes/downVotes</td></tr>
+<tr><td data-label="#">4</td><td data-label="Request">Get Favorites Count</td><td data-label="Data test">favoritesCount is a number &gt;= 0</td></tr>
+<tr><td data-label="#">5</td><td data-label="Request">Get Game Icon Thumbnail</td><td data-label="Data test">Icon thumbnail Completed with https imageUrl for this universe</td></tr>
+<tr><td data-label="#">6</td><td data-label="Request">List Places in Universe</td><td data-label="Data test">data includes the ChocoNeko placeId</td></tr>
+</tbody></table>
+<h3 id="api-results">Results</h3>
+<p class="scroll-hint">Scroll sideways to see the whole table.</p>
+<div class="table-scroll" role="region" aria-labelledby="api-results" tabindex="0">
+<table class="results"><thead><tr><th scope="col">#</th><th scope="col">Request</th><th scope="col">Status</th><th scope="col">Time</th><th scope="col">Tests</th><th scope="col">Result</th></tr></thead><tbody>
+<tr><td>1</td><td>Resolve Place to Universe ID</td><td>200 OK</td><td>989 ms</td><td>4/4</td><td><span class="status">Pass</span> (989 ms, close to 1s)</td></tr>
+<tr><td>2</td><td>Get Game Details</td><td>200 OK</td><td>not recorded</td><td>not recorded</td><td>Checked by hand: fields present, values hidden by content restriction</td></tr>
+<tr><td>3</td><td>Get Game Votes</td><td>200 OK</td><td>546 ms</td><td>4/4</td><td><span class="status">Pass</span></td></tr>
+<tr><td>4</td><td>Get Favorites Count</td><td>200 OK</td><td>612 ms</td><td>4/4</td><td><span class="status">Pass</span></td></tr>
+<tr><td>5</td><td>Get Game Icon Thumbnail</td><td>200 OK</td><td>700 ms</td><td>4/4</td><td><span class="status">Pass</span> (I opened the image and confirmed it)</td></tr>
+<tr><td>6</td><td>List Places in Universe</td><td>200 OK</td><td>279 ms</td><td>4/4</td><td><span class="status">Pass</span></td></tr>
+</tbody></table>
+</div>
+<h3>Details</h3>
+<p><strong>1. Resolve Place to Universe ID.</strong> The response returned <code>universeId: 9997995956</code>, which matches the expected value.</p>
+<p><strong>2. Get Game Details.</strong></p>
+<ul><li>First run: I used the wrong universe ID and got <code>200 OK</code> with an empty <code>data: []</code>.</li><li>Second run: I re-checked the ID with request 1 and ran it again with the right one. This time it returned <code>200 OK</code> with one game object.</li><li>The game has <code>isContentRestricted: true</code>. Because of that, the values are placeholders: name <code>[TITLE UNAVAILABLE]</code>, <code>id</code> 0, <code>playing</code> 0, <code>visits</code> 0, <code>favoritedCount</code> 0, and dates of <code>0001-01-01</code>. All the expected fields are there, but the values aren't real.</li></ul>
+<p><strong>3. Get Game Votes.</strong> The <code>id</code> matches the universe. It shows 4 upvotes and 0 downvotes, so this is real data even though game details are restricted.</p>
+<p><strong>4. Get Favorites Count.</strong> <code>favoritesCount</code> is 5. This is real data, unlike the 0 shown in game details.</p>
+<p><strong>5. Get Game Icon Thumbnail.</strong> <code>targetId</code> matches the universe, <code>state</code> is <code>Completed</code>, and <code>imageUrl</code> is an https link. I opened the URL in a browser and it shows the ChocoNeko icon at 512&times;512.</p>
+<p><strong>6. List Places in Universe.</strong> There are 6 places and only one page (<code>nextPageCursor: null</code>). ChocoNeko's place <code>129419556998762</code> is in the list with the right universeId. The 6 places include a test place, and one of them has a dev-labelled title.</p>
+<h3>Observations</h3>
+<ol><li><strong>A wrong ID returns empty data instead of an error.</strong> A wrong universe ID gives <code>200 OK</code> with an empty <code>data</code> list. Anything that uses this API should check for empty data, not just the status code.</li><li><strong>Restricted data doesn't match across endpoints.</strong> Game details hides everything (0 visits, 0 favourites), but the votes, favourites and places endpoints still return real values. Don't trust zeros from game details while the game is content restricted.</li><li><strong>Test and dev places can be seen publicly.</strong> A test place and the dev label on the main place are visible to anyone through a public API. This isn't a bug, but it's worth deciding whether that's okay. Five of the six places also have an empty description.</li></ol>
+<h3>What I'd do differently next time</h3>
+<ul><li>Write down status, time and test results for every request.</li><li>When a result changes between runs, note exactly what I changed before re-running.</li></ul>
 </section>
 <a class="btn ghost back" href="index.html#work">&larr; Back to portfolio</a>
 </article>
