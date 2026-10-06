@@ -1,4 +1,5 @@
-/* Theme switch: System (default) -> Light -> Dark. Saved in localStorage. */
+/* Theme switch: System (default) -> Light -> Dark. Saved in localStorage.
+   window.siteTheme lets the settings panel read/set the same mode; changes fire "sitethemechange" on document. */
 (function () {
   var KEY = 'theme', ORDER = ['system', 'light', 'dark'];
   var LABEL = { system: 'System', light: 'Light', dark: 'Dark' };
@@ -17,6 +18,7 @@
     }
   }
   function render(btn, mode) {
+    if (!btn) return;
     var next = ORDER[(ORDER.indexOf(mode) + 1) % ORDER.length];
     btn.setAttribute('data-mode', mode);
     btn.setAttribute('aria-label', 'Theme: ' + LABEL[mode] + '. Switch to ' + LABEL[next]);
@@ -24,19 +26,33 @@
     var label = btn.querySelector('.theme-label');
     if (label) label.textContent = LABEL[mode];
   }
+  function announce() {
+    var ev;
+    try { ev = new CustomEvent('sitethemechange', { detail: { mode: mode } }); }
+    catch (e) { ev = document.createEvent('CustomEvent'); ev.initCustomEvent('sitethemechange', false, false, { mode: mode }); }
+    document.dispatchEvent(ev);
+  }
+  function set(next, store) {
+    if (ORDER.indexOf(next) < 0) next = 'system';
+    mode = next;
+    if (store !== false) {
+      try { if (mode === 'system') localStorage.removeItem(KEY); else localStorage.setItem(KEY, mode); } catch (e) {}
+    }
+    apply(mode);
+    render(btn, mode);
+    announce();
+  }
   var btn = document.getElementById('theme-toggle');
   var mode = saved();
   apply(mode);
+  window.siteTheme = { get: function () { return mode; }, set: function (m) { set(m); } };
+  window.addEventListener('storage', function (e) {
+    if (e.key === KEY || e.key === null) set(saved(), false);
+  });
   if (!btn) return;
   render(btn, mode);
   btn.hidden = false;
   btn.addEventListener('click', function () {
-    mode = ORDER[(ORDER.indexOf(mode) + 1) % ORDER.length];
-    try { if (mode === 'system') localStorage.removeItem(KEY); else localStorage.setItem(KEY, mode); } catch (e) {}
-    apply(mode);
-    render(btn, mode);
-  });
-  window.addEventListener('storage', function (e) {
-    if (e.key === KEY) { mode = saved(); apply(mode); render(btn, mode); }
+    set(ORDER[(ORDER.indexOf(mode) + 1) % ORDER.length]);
   });
 })();
