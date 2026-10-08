@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0e1626" media="(prefers-color-scheme: dark)">
 <script>(function(d){d.classList.add('js');var t,f,r,k,n=navigator,c=n.connection,m=function(q){return!!(window.matchMedia&&matchMedia(q).matches)};try{t=localStorage.getItem('theme');f=localStorage.getItem('fx');r=localStorage.getItem('reduceMotion');k=localStorage.getItem('touches')}catch(e){}if(t==='light'||t==='dark')d.setAttribute('data-theme',t);if(f!=='full'&&f!=='lite'&&f!=='off'){f=(m('(max-width:600px)')||(n.hardwareConcurrency&&n.hardwareConcurrency<=4)||(c&&c.saveData))?'lite':'full';d.setAttribute('data-fx-auto',f)}d.setAttribute('data-fx',f);d.setAttribute('data-touches',k==='0'?'off':'on');d.setAttribute('data-motion',r==='1'||(r!=='0'&&m('(prefers-reduced-motion: reduce)'))?'reduce':'ok')})(document.documentElement)</script>
 <title>QA writing samples | SleepyMie</title>
-<meta name="description" content="Sample bug reports, a test plan and an API test report by SleepyMie, junior QA and game tester, based on real work on ChocoNeko, a Roblox game.">
+<meta name="description" content="Sample bug reports, a test plan, an API test report and a fix verification log by SleepyMie, junior QA and game tester, based on real work on ChocoNeko, a Roblox game.">
 <link rel="icon" href="favicon.ico" sizes="32x32">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -29,12 +29,13 @@
 <main class="wrap">
 <article class="cs qa">
 <h1>QA writing samples</h1>
-<p>These are writing samples to show how I write bug reports, test plans and test reports. The two bug reports are retrospective write-ups of real bugs from ChocoNeko, my Roblox game, that have since been fixed. At the time I reported them in plain messages to the AI coding agents that write the code, so I've rewritten them here in a standard format. The test plan is a sample plan for a real change. The API test report is from my first real test run in Postman, on Roblox's public game APIs for ChocoNeko. Where I don't have an exact detail, such as the build version, I've left a placeholder in <span class="ph">[brackets]</span>.</p>
+<p>These are writing samples to show how I write bug reports, test plans, test reports and fix verification notes. The two bug reports are retrospective write-ups of real bugs from ChocoNeko, my Roblox game, that have since been fixed. At the time I reported them in plain messages to the AI coding agents that write the code, so I've rewritten them here in a standard format. The test plan is a sample plan for a real change. The API test report is from my first real test run in Postman, on Roblox's public game APIs for ChocoNeko. The fix verification log covers three real fixes from Oct 7, 2026, which I playtested and verified. Where I don't have an exact detail, such as the build version, I've left a placeholder in <span class="ph">[brackets]</span>.</p>
 <ul class="toc">
 <li><a href="#bug-1">Bug report 1: Phone and Backpack open, then close</a></li>
 <li><a href="#bug-2">Bug report 2: Free cam takes about 5 seconds to open</a></li>
 <li><a href="#test-plan">Test plan: HUD and chat day/night recolour</a></li>
 <li><a href="#api-report">API test report: Roblox public game APIs (Postman)</a></li>
+<li><a href="#fix-verification">Fix verification log: Incrediblox beat bounce and Settings sliders</a></li>
 </ul>
 <hr />
 <section class="report" id="bug-1">
@@ -177,6 +178,42 @@
 <ol><li><strong>A wrong ID returns empty data instead of an error.</strong> A wrong universe ID gives <code>200 OK</code> with an empty <code>data</code> list. Anything that uses this API should check for empty data, not just the status code.</li><li><strong>Restricted data doesn't match across endpoints.</strong> Game details hides everything (0 visits, 0 favourites), but the votes, favourites and places endpoints still return real values. Don't trust zeros from game details while the game is content restricted.</li><li><strong>Test and dev places can be seen publicly.</strong> A test place and the dev label on the main place are visible to anyone through a public API. This isn't a bug, but it's worth deciding whether that's okay. Five of the six places also have an empty description.</li></ol>
 <h3>What I'd do differently next time</h3>
 <ul><li>Write down status, time and test results for every request.</li><li>When a result changes between runs, note exactly what I changed before re-running.</li></ul>
+</section>
+<hr />
+<section class="report" id="fix-verification">
+<p class="kicker">Fix verification log &middot; <span class="label">Real fixes, checked before I called them done</span></p>
+<h2>Verification log: three Incrediblox and Settings fixes (Oct 7, 2026)</h2>
+<p>A short log of three real fixes on ChocoNeko from Oct 7, 2026. The beat bounce issue came from code review, and my AI teammates found and fixed the Settings slider issue. AI agents wrote the code. My part, for all three, was playtesting the fixes and verifying them. The details come from that day's change notes and our QA tracker.</p>
+<h3>How I handle a fix</h3>
+<ol><li><strong>Spot the issue</strong> while playtesting.</li><li><strong>Report it clearly:</strong> what happens, where, and how to see it.</li><li><strong>Playtest the fix</strong> once the agents have made it.</li><li><strong>Verify before publishing</strong>, so nothing goes out untested.</li></ol>
+<p>In this log, my part was the last two steps.</p>
+<h3>1. Incrediblox v795: the Mix beat bounce reuses its animations</h3>
+<dl class="fields">
+<dt>Found by</dt><dd>Code review</dd>
+<dt>Build</dt><dd>Incrediblox v795, published Oct 7, 2026</dd>
+<dt>What changed</dt><dd>The Mix beat bounce effect used to create more than a dozen new animations every beat. Now it reuses one animation per element.</dd>
+<dt>Result</dt><dd>It looks the same. In a MicroProfiler (Ctrl+F6) comparison against the live v782, there was no repeating per-beat spike, and it wasn't heavier overall. No timings were recorded, so I'm not quoting any numbers.</dd>
+<dt>What I did</dt><dd>I playtested the fix in Studio, and it passed all 5 checks, including the MicroProfiler comparison.</dd>
+<dt>Status</dt><dd><span class="status">Verified before publishing</span></dd>
+<dt>Tracker</dt><dd><a href="https://github.com/SleepyMieMoo/choconeko-qa/issues/7" target="_blank" rel="noopener">choconeko-qa #7</a></dd>
+</dl>
+<p>When a fix is meant to look exactly the same, looking at it isn't enough. That's where the MicroProfiler comparison against the previous live version comes in.</p>
+<h3>2. Earlier the same day: Settings sliders only listen while you drag</h3>
+<dl class="fields">
+<dt>Found by</dt><dd>My AI teammates, who also fixed it</dd>
+<dt>Builds</dt><dd>Hub v5131, TD Survival v1921, Cooking v19, plus Incrediblox, published Oct 7, 2026</dd>
+<dt>What changed</dt><dd>The Settings sliders now only listen for input while you drag them.</dd>
+<dt>What I did</dt><dd>I playtested the fix and verified it before it was published.</dd>
+<dt>Status</dt><dd><span class="status">Verified before publishing</span></dd>
+</dl>
+<h3>3. Also that day: a colour picker lag spike in Incrediblox</h3>
+<dl class="fields">
+<dt>Build</dt><dd>Incrediblox v782</dd>
+<dt>What changed</dt><dd>A colour picker lag spike on repaints in Incrediblox was fixed.</dd>
+<dt>What I did</dt><dd>I verified the fix on PC, on Incrediblox v782.</dd>
+<dt>Status</dt><dd><span class="status">Verified on PC (v782)</span></dd>
+<dt>Tracker</dt><dd><a href="https://github.com/SleepyMieMoo/choconeko-qa/issues/4" target="_blank" rel="noopener">choconeko-qa #4</a></dd>
+</dl>
 </section>
 <a class="btn ghost back" href="index.html#work">&larr; Back to portfolio</a>
 </article>
